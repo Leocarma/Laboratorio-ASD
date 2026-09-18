@@ -1,0 +1,57 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{a4paper, top=3cm, bottom=3cm, left=3cm, right=3cm}
+\usepackage{hyperref}
+
+\title{Gestione di Chiavi Duplicate in Alberi Binari di Ricerca\\
+\large Laboratorio di Algoritmi e Strutture Dati}
+\author{Cognome Nome\\
+Matricola: 1234567\\
+Docente: Simone Marinai}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduzione Generale}
+Nel seguente progetto viene affrontato il problema della gestione di chiavi duplicate all'interno di un Albero Binario di Ricerca (ABR). Normalmente, un ABR prevede che tutte le chiavi siano distinte. Quando è necessario gestire chiavi duplicate (ad esempio, record diversi che condividono lo stesso valore di chiave), vi sono molteplici approcci implementativi. In questo documento metteremo a confronto tre differenti strategie, valutandone l'efficienza in termini di tempo di esecuzione (per le operazioni di inserimento e ricerca) e l'occupazione di memoria (numero di nodi e altezza dell'albero).
+
+\section{Spiegazione Teorica del Problema}
+Abbiamo implementato tre versioni di Albero Binario di Ricerca in Python, denominate in base all'approccio utilizzato:
+\begin{itemize}
+    \item \textbf{ABRNormal (Implementazione Normale)}: Le chiavi duplicate non godono di alcun trattamento speciale. Ogni nuova chiave inserita viene collocata seguendo la normale regola dell'albero, scendendo sistematicamente nel sottoalbero sinistro (o destro, a seconda della convenzione) al momento di una collisione con una chiave uguale. 
+    \item \textbf{ABRFlag (Implementazione con Flag Booleano)}: In questa struttura, ogni nodo è esteso con un flag booleano \texttt{has\_duplicate}. L'albero mantiene una singola istanza per chiave. Quando si cerca di inserire una chiave già presente, l'inserimento si arresta al nodo esistente e imposta il flag \texttt{has\_duplicate = True}. Questa implementazione è vantaggiosa a livello spaziale, ma perde l'informazione sul numero esatto di duplicati o eventuali valori satellite associati.
+    \item \textbf{ABRList (Implementazione con Lista di Nodi)}: Ogni nodo dell'albero contiene una lista dinamica in cui vengono inserite le chiavi identiche. In questo modo, l'albero si sviluppa spazialmente solo sulle chiavi uniche, delegando la gestione dei duplicati all'allocazione sequenziale all'interno della lista del nodo stesso.
+\end{itemize}
+
+\section{Documentazione del Codice}
+I file Python sviluppati per questo esercizio sono:
+\begin{itemize}
+    \item \texttt{abr\_normal.py}: Contiene la classe \texttt{NodeNormal} e \texttt{ABRNormal}.
+    \item \texttt{abr\_flag.py}: Contiene la classe \texttt{NodeFlag} e \texttt{ABRFlag}.
+    \item \texttt{abr\_list.py}: Contiene la classe \texttt{NodeList} e \texttt{ABRList}.
+    \item \texttt{test\_abr.py}: Script che orchestra la generazione dei dati (array casuali con percentuale controllata di duplicati), le misurazioni di tempo tramite \texttt{time.perf\_counter()} e l'esportazione dei risultati su file CSV.
+    \item \texttt{plot\_results.py}: Modulo accessorio per la generazione di grafici usando \texttt{matplotlib} e \texttt{pandas}.
+\end{itemize}
+
+L'esecuzione del programma principale per i test è automatizzata tramite lo script \texttt{test\_abr.py}, le cui istruzioni di avvio sono documentate anche nel file \texttt{ReadmeLabAlgo.txt}.
+
+\section{Descrizione degli Esperimenti Condotti}
+Sono stati eseguiti test inserendo nell'albero set di dati randomici la cui dimensione spazia da $1.000$ a $10.000$ elementi. In ogni test, è stata imposta artificialmente una percentuale di elementi duplicati (10\%, 30\%, 50\%, 80\%). I tempi presi in considerazione coprono l'inserimento completo della sequenza e la ricerca di un batch misto di chiavi presenti e non presenti. Oltre al tempo (misurato in secondi), abbiamo raccolto e confrontato l'altezza dell'albero (\(h\)) e il numero totale di nodi per ogni approccio.
+
+\section{Analisi dei Risultati e Conclusioni}
+Come lecito aspettarsi, l'altezza degli alberi \textbf{ABRFlag} e \textbf{ABRList} risulta essere rigorosamente inferiore rispetto ad \textbf{ABRNormal} all'aumentare della percentuale di duplicati. Nel caso dell'ABR normale, l'inserimento di $K$ duplicati genera una catena lineare (o parzialmente lineare) locale all'interno dell'albero, peggiorando le performance di inserimento (il tempo medio si sposta da $O(\log n)$ a $O(n)$ in presenza di alta densità di duplicati consecutivi). 
+
+Al contrario, \textbf{ABRList} mantiene la complessità del caso medio $O(\log n)$ per l'albero, delegando il salvataggio del duplicato a un'append in coda in tempo ammortizzato $O(1)$.
+\textbf{ABRFlag} si dimostra il più parsimonioso in assoluto in termini di tempo di esecuzione e allocazione di memoria (numero di nodi minimo in assoluto), pagando però il prezzo di non preservare lo storico o le quantità dei duplicati. 
+
+In conclusione, se è necessario memorizzare dati associati ad ogni duplicato, l'utilizzo di liste nei nodi (\textbf{ABRList}) è il compromesso che offre le prestazioni logaritmiche migliori e una spiccata organizzazione spaziale.
+
+\end{document}
