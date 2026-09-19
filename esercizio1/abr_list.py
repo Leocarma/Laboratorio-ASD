@@ -1,7 +1,6 @@
 class NodeList:
     def __init__(self, key):
         self.key = key
-        # List of elements with the same key
         self.duplicates = [key]
         self.left = None
         self.right = None

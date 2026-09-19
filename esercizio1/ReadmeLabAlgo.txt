@@ -1,4 +1,4 @@
-Cognome, Nome, 1234567 - Esercizio: Confrontare vari modi per gestire chiavi duplicate in ABR
+Cognome: Carmannini, Nome: Leonardo, Matricola:7136659 - Esercizio: Confrontare vari modi per gestire chiavi duplicate in ABR
 
 Istruzioni per l'esecuzione:
 1. Assicurarsi di avere installato Python (versione 3.6 o superiore).
