@@ -8,55 +8,65 @@ def generate_plots():
         print("Il file risultati.csv non è stato trovato. Esegui prima test_abr.py")
         return
 
-    # Filtra i dati per dimensione e % di duplicati per i grafici
-    # Confronto Tempi di Inserimento (con 50% duplicati)
-    df_50 = df[df['DupPct'] == 0.5]
-    
-    plt.figure(figsize=(12, 5))
-    
-    # Inserimento
-    plt.subplot(1, 2, 1)
-    for tree in df_50['Tree'].unique():
-        subset = df_50[df_50['Tree'] == tree]
-        plt.plot(subset['Size'], subset['InsertTime'], marker='o', label=tree)
-    
-    plt.title('Tempi di Inserimento (50% duplicati)')
-    plt.xlabel('Numero Totale di Inserimenti')
-    plt.ylabel('Tempo (s)')
-    plt.legend()
-    plt.grid(True)
-    
-    # Ricerca
-    plt.subplot(1, 2, 2)
-    for tree in df_50['Tree'].unique():
-        subset = df_50[df_50['Tree'] == tree]
-        plt.plot(subset['Size'], subset['SearchTime'], marker='s', label=tree)
-        
-    plt.title('Tempi di Ricerca (50% duplicati)')
-    plt.xlabel('Dimensione dell\'albero logico')
-    plt.ylabel('Tempo (s)')
-    plt.legend()
-    plt.grid(True)
-    
+    # Usiamo TUTTE E QUATTRO le percentuali generate nel test
+    percentages = [0.1, 0.3, 0.5, 0.8]
+    trees = df['Tree'].unique()
+
+    # 1. Grafico Tempi di Inserimento (Griglia 2x2)
+    plt.figure(figsize=(14, 10))
+    for i, pct in enumerate(percentages, 1):
+        plt.subplot(2, 2, i)
+        df_pct = df[df['DupPct'] == pct]
+        for tree in trees:
+            subset = df_pct[df_pct['Tree'] == tree]
+            plt.plot(subset['Size'], subset['InsertTime'], marker='o', label=tree)
+        plt.title(f'Inserimento ({int(pct*100)}% duplicati)')
+        plt.xlabel('Numero Totale Dati')
+        plt.ylabel('Tempo (secondi)')
+        plt.legend()
+        plt.grid(True)
     plt.tight_layout()
-    plt.savefig('tempi_50_pct.png')
-    plt.close()
-    
-    # Altezza alberi
-    plt.figure(figsize=(8, 5))
-    for tree in df_50['Tree'].unique():
-        subset = df_50[df_50['Tree'] == tree]
-        plt.plot(subset['Size'], subset['Height'], marker='^', label=tree)
-        
-    plt.title('Altezza dell\'albero (50% duplicati)')
-    plt.xlabel('Numero Totale di Inserimenti')
-    plt.ylabel('Altezza (h)')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig('altezza_50_pct.png')
+    plt.savefig('tempi_inserimento_multi.png', dpi=300)
     plt.close()
 
-    print("Grafici generati e salvati in formato PNG (tempi_50_pct.png, altezza_50_pct.png).")
+    # 2. Grafico Tempi di Ricerca (Griglia 2x2)
+    plt.figure(figsize=(14, 10))
+    for i, pct in enumerate(percentages, 1):
+        plt.subplot(2, 2, i)
+        df_pct = df[df['DupPct'] == pct]
+        for tree in trees:
+            subset = df_pct[df_pct['Tree'] == tree]
+            plt.plot(subset['Size'], subset['SearchTime'], marker='s', label=tree)
+        plt.title(f'Ricerca Mista ({int(pct*100)}% duplicati)')
+        plt.xlabel('Numero Totale Dati')
+        plt.ylabel('Tempo (secondi)')
+        plt.legend()
+        plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('tempi_ricerca_multi.png', dpi=300)
+    plt.close()
+
+    # 3. Grafico Altezza Albero (Griglia 2x2)
+    plt.figure(figsize=(14, 10))
+    for i, pct in enumerate(percentages, 1):
+        plt.subplot(2, 2, i)
+        df_pct = df[df['DupPct'] == pct]
+        for tree in trees:
+            subset = df_pct[df_pct['Tree'] == tree]
+            plt.plot(subset['Size'], subset['Height'], marker='^', label=tree)
+        plt.title(f'Altezza Albero ({int(pct*100)}% duplicati)')
+        plt.xlabel('Numero Totale Dati')
+        plt.ylabel('Altezza (Numero di salti)')
+        plt.legend()
+        plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('altezza_multi.png', dpi=300)
+    plt.close()
+
+    print("Grafici 2x2 generati con tutte le percentuali (10%, 30%, 50%, 80%):")
+    print("- tempi_inserimento_multi.png")
+    print("- tempi_ricerca_multi.png")
+    print("- altezza_multi.png")
 
 if __name__ == '__main__':
     generate_plots()

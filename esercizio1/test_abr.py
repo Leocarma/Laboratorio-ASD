@@ -13,11 +13,16 @@ def run_tests():
 
     for size in sizes:
         for dup_pct in duplicate_percentages:
-            # Genera i dati
+            # Generiamo prima i dati unici come differenza con la percentuale di duplicati
+            # Es: Supponiamo di dover creare 1000 numeri di cui il 30% dup, 700 saranno unici e 300 quelli duplicati
             num_unique = int(size * (1 - dup_pct))
+            # Nel caso in cui si producano il 100% di duplicati (cosa che non succede nel nostro caso, ma per buona pratica poniamo comunque il controllo)
+            # La lista num_unique sarebbe vuota, logicamente questo è impossibile, in quanto è impossibile creare 1000 fotocopie tutte uguali
+            # Senza prima partire dalla fotocopia originale unica
             if num_unique == 0:
                 num_unique = 1
-                
+
+            # Pesca delle chiavi uniche
             unique_keys = random.sample(range(1, size * 10), num_unique)
             data = []
             
@@ -46,9 +51,10 @@ def run_tests():
                     tree.insert(key)
                 end_time = time.perf_counter()
                 insert_time = end_time - start_time
-                
-                # Ricerca
+
                 # Ricerca di chiavi esistenti e inesistenti (miste)
+                # Vogliamo testare sia ricerce con successo che senza successo, scegliamo un rapporto 50 e 50
+                # Prendiamo un 50% di numeri sicuramente dentro all'albero e un'altra metà che non è presente
                 search_keys = data[:size//2] + random.sample(range(size*10, size*20), size//2)
                 
                 start_time = time.perf_counter()
