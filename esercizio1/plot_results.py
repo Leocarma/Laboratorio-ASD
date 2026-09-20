@@ -87,8 +87,12 @@ def generate_plots():
     create_1x3_bar_plot('Height', "Altezza degli alberi per percentuale di duplicati",
                         "Altezza dell'albero", 'altezza.png', 1)
 
+    create_1x3_bar_plot('Nodes', "Conteggio dei Nodi allocati in memoria",
+                        "Numero di Nodi fisici", 'nodi.png', 1)
+
     print("Grafici salvati nella cartella 'risultati':")
     print("  - tempi_inserimento.png")
     print("  - tempi_ricerca_successo.png")
     print("  - tempi_ricerca_fallimento.png")
     print("  - altezza.png")
+    print("  - nodi.png")
