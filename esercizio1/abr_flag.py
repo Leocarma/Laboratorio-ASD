@@ -1,11 +1,14 @@
 class NodeFlag:
+    # Rappresenta un nodo con un interruttore (flag) per gestire i duplicati
     def __init__(self, key):
         self.key = key
         self.left = None
         self.right = None
-        self.has_duplicate = False
+        self.has_duplicate = False # Flag inizialmente spento
 
 class ABRFlag:
+    # ABR che accende un Flag booleano quando incontra un duplicato,
+    # risparmiando la creazione di un nuovo nodo fisico.
     def __init__(self):
         self.root = None
 
@@ -16,6 +19,7 @@ class ABRFlag:
             self._insert_recursive(self.root, key)
 
     def _insert_recursive(self, node, key):
+        # Se la chiave è uguale a una già esistente, accendiamo solo il flag
         if key == node.key:
             node.has_duplicate = True
         elif key < node.key:
@@ -56,6 +60,7 @@ class ABRFlag:
         return self._conta_nodi_recursive(self.root)
 
     def _conta_nodi_recursive(self, node):
+        # Conta quanti nodi fisici sono stati allocati, ignorando i flag accesi
         if node is None:
             return 0
         return 1 + self._conta_nodi_recursive(node.left) + self._conta_nodi_recursive(node.right)

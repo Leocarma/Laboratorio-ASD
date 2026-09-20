@@ -1,11 +1,14 @@
 class NodeList:
+    # Rappresenta un nodo contenente una lista per immagazzinare infiniti duplicati
     def __init__(self, key):
         self.key = key
-        self.duplicates = [key]
         self.left = None
         self.right = None
+        self.duplicates = [] # Lista interna vuota all'inizio
 
 class ABRList:
+    # ABR che salva i duplicati accodandoli nella lista del nodo originale,
+    # mantenendo l'albero compatto strutturalmente.
     def __init__(self):
         self.root = None
 
@@ -16,6 +19,7 @@ class ABRList:
             self._insert_recursive(self.root, key)
 
     def _insert_recursive(self, node, key):
+        # Se la chiave esiste già, la aggiungiamo alla lista di quel nodo
         if key == node.key:
             node.duplicates.append(key)
         elif key < node.key:
@@ -56,6 +60,7 @@ class ABRList:
         return self._conta_nodi_recursive(self.root)
 
     def _conta_nodi_recursive(self, node):
+        # Conta quanti nodi fisici sono stati allocati, ignorando gli elementi nelle liste
         if node is None:
             return 0
         return 1 + self._conta_nodi_recursive(node.left) + self._conta_nodi_recursive(node.right)
