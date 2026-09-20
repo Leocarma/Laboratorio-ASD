@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21ef8793-0ce5-4405-947f-044f8ddd7879" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/relazione/relazione.tex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/risultati/altezza.png" beforeDir="false" afterPath="$PROJECT_DIR$/risultati/altezza.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risultati/risultati.csv" beforeDir="false" afterPath="$PROJECT_DIR$/risultati/risultati.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risultati/tempi_inserimento.png" beforeDir="false" afterPath="$PROJECT_DIR$/risultati/tempi_inserimento.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risultati/tempi_ricerca_fallimento.png" beforeDir="false" afterPath="$PROJECT_DIR$/risultati/tempi_ricerca_fallimento.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risultati/tempi_ricerca_successo.png" beforeDir="false" afterPath="$PROJECT_DIR$/risultati/tempi_ricerca_successo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ReadmeLabAlgo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ReadmeLabAlgo.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

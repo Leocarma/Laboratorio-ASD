@@ -10,12 +10,12 @@ Vogliamo confrontare vari modi per gestire chiavi duplicate in alberi binari di 
 Il progetto implementa in Python le tre strutture dati, ne verifica la correttezza 
 algoritmica stampando il numero di nodi allocati, e ne confronta l'altezza strutturale, il conteggio 
 dei nodi fisici allocati, il tempo di costruzione (inserimento) e il tempo di 
-ricerca (misto successi/fallimenti). Gli esperimenti utilizzano array di dimensioni 
-crescenti sporcati con percentuali crescenti di duplicati (10%, 30%, 50%, 80%).
+ricerca (suddiviso tra ricerca con successo e fallimento). Gli esperimenti utilizzano array di dimensioni 
+crescenti con percentuali variabili di duplicati (10%, 50%, 80%).
 
 ISTRUZIONI PER L'ESECUZIONE
 
-1) Aprire una console Bash e spostarsi nella cartella del progetto.
+1) Aprire un terminale (es. Anaconda Prompt o PowerShell) e spostarsi nella cartella del progetto.
 
 2) Installare le dipendenze necessarie:
 
@@ -25,5 +25,5 @@ ISTRUZIONI PER L'ESECUZIONE
 
    python main.py
 
-4) Al termine vengono salvati nella cartella "risultati" i dati in formato
-   CSV e tre grafici in formato PNG.
+4) Al termine, nella cartella "risultati" verranno salvati i dati in formato
+   CSV e 5 grafici in formato PNG per il confronto delle metriche.
