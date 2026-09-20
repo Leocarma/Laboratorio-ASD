@@ -2,99 +2,112 @@ import time
 import random
 import csv
 import os
+import sys
 from abr_normal import ABRNormal
 from abr_flag import ABRFlag
 from abr_list import ABRList
 
-# Le grandezze degli array su cui testeremo gli alberi
-DEFAULT_SIZES = (1000, 2000, 3000, 5000, 10000)
+sys.setrecursionlimit(50000)
+
+DEFAULT_SIZES = (500, 1000, 2000, 3000, 5000, 7500, 10000)
 
 def run_benchmarks(sizes=DEFAULT_SIZES):
-    # Le diverse percentuali di chiavi duplicate da inserire
-    duplicate_percentages = [0.1, 0.3, 0.5, 0.8] # 10%, 30%, 50%, 80% di duplicati
+    # 3 percentuali: Bassa (10%), Media (50%), Alta (80%)
+    duplicate_percentages = [0.1, 0.5, 0.8] 
     
-    # Lista in cui salveremo i risultati prima di scriverli sul CSV
     results = []
 
-    # Iteriamo per ogni dimensione dell'array
     for size in sizes:
-        # Iteriamo per ogni percentuale di duplicati
         for dup_pct in duplicate_percentages:
-            # Calcoliamo quanti elementi devono essere univoci
-            num_unique = int(size * (1 - dup_pct))
-            if num_unique == 0:
-                num_unique = 1
-
-            # Generiamo numeri univoci casuali
-            unique_keys = random.sample(range(1, size * 10), num_unique)
-            data = []
             
-            # Aggiungiamo i numeri univoci all'array finale
-            data.extend(unique_keys)
-            
-            # Calcoliamo quanti duplicati servono per raggiungere la size voluta
-            num_duplicates = size - len(data)
-            for _ in range(num_duplicates):
-                # Scegliamo a caso un numero univoco esistente e lo duplichiamo
-                data.append(random.choice(unique_keys))
-                
-            # Mischiamo l'array affinché i duplicati siano sparsi casualmente
-            random.shuffle(data)
-            
-            # Instanziamo i tre alberi da mettere a confronto
-            trees = {
-                'ABRNormal': ABRNormal(),
-                'ABRFlag': ABRFlag(),
-                'ABRList': ABRList()
+            accumulated = {
+                'ABRNormal': {'InsertTime': 0, 'SearchSuccessTime': 0, 'SearchFailureTime': 0, 'Height': 0, 'Nodes': 0},
+                'ABRFlag': {'InsertTime': 0, 'SearchSuccessTime': 0, 'SearchFailureTime': 0, 'Height': 0, 'Nodes': 0},
+                'ABRList': {'InsertTime': 0, 'SearchSuccessTime': 0, 'SearchFailureTime': 0, 'Height': 0, 'Nodes': 0}
             }
-            
-            # Avviamo il test per ogni albero
-            for tree_name, tree in trees.items():
-                
-                # TEST 1: TEMPO DI INSERIMENTO
-                start_time = time.perf_counter()
-                for key in data:
-                    tree.insert(key)
-                end_time = time.perf_counter()
-                insert_time = end_time - start_time
 
-                # Prepariamo un array per il test di ricerca mista:
-                # 50% di numeri presi dall'array (successi certi)
-                # 50% di numeri esterni al range (fallimenti certi)
-                search_keys = data[:size//2] + random.sample(range(size*10, size*20), size//2)
+            repetitions = 40
+            
+            for _ in range(repetitions):
                 
-                # TEST 2: TEMPO DI RICERCA MISTA
-                start_time = time.perf_counter()
-                for key in search_keys:
-                    tree.search(key)
-                end_time = time.perf_counter()
-                search_time = end_time - start_time
+                # 1. Calcoliamo il numero esatto di chiavi univoche necessarie
+                num_unique = int(size * (1 - dup_pct))
+                if num_unique == 0:
+                    num_unique = 1
+
+                # 2. Peschiamo chiavi casuali in un range largo
+                unique_keys = random.sample(range(1, size * 10), num_unique)
                 
-                # Estraiamo le proprietà strutturali per capire come si sono comportati
-                altezza = tree.altezza()
-                nodi = tree.conta_nodi()
+                data = []
+                data.extend(unique_keys)
                 
-                # Salviamo la statistica corrente
+                # 3. Riempiamo i posti restanti per raggiungere 'size' inserendo duplicati scelti a caso
+                num_duplicates = size - len(data)
+                for _ in range(num_duplicates):
+                    data.append(random.choice(unique_keys))
+                    
+                # 4. Mescoliamo per evitare di inserire dati in ordine (caso peggiore ABR)
+                random.shuffle(data)
+                
+                trees = {
+                    'ABRNormal': ABRNormal(),
+                    'ABRFlag': ABRFlag(),
+                    'ABRList': ABRList()
+                }
+                
+                for tree_name, tree in trees.items():
+                    # TEST 1: INSERIMENTO
+                    start_time = time.perf_counter()
+                    for key in data:
+                        tree.insert(key)
+                    insert_time = time.perf_counter() - start_time
+
+                    # TEST 2: RICERCA CON SUCCESSO
+                    search_success_keys = random.choices(unique_keys, k=size)
+                    
+                    start_time = time.perf_counter()
+                    for key in search_success_keys:
+                        tree.search(key)
+                    search_success_time = time.perf_counter() - start_time
+                    
+                    # TEST 3: RICERCA CON FALLIMENTO
+                    existing_set = set(data)
+                    all_possible = range(1, size * 10)
+                    non_existing = [k for k in random.sample(all_possible, min(size * 3, len(all_possible))) if k not in existing_set]
+                    while len(non_existing) < size:
+                        non_existing.append(random.randint(size * 10, size * 12))
+                    search_fail_keys = non_existing[:size]
+                    
+                    start_time = time.perf_counter()
+                    for key in search_fail_keys:
+                        tree.search(key)
+                    search_fail_time = time.perf_counter() - start_time
+                    
+                    accumulated[tree_name]['InsertTime'] += insert_time
+                    accumulated[tree_name]['SearchSuccessTime'] += search_success_time
+                    accumulated[tree_name]['SearchFailureTime'] += search_fail_time
+                    accumulated[tree_name]['Height'] += tree.altezza()
+                    accumulated[tree_name]['Nodes'] += tree.conta_nodi()
+            
+            for tree_name in accumulated:
                 results.append({
                     'Tree': tree_name,
                     'Size': size,
                     'DupPct': dup_pct,
-                    'InsertTime': insert_time,
-                    'SearchTime': search_time,
-                    'Height': altezza,
-                    'Nodes': nodi
+                    'InsertTime': accumulated[tree_name]['InsertTime'] / repetitions,
+                    'SearchSuccessTime': accumulated[tree_name]['SearchSuccessTime'] / repetitions,
+                    'SearchFailureTime': accumulated[tree_name]['SearchFailureTime'] / repetitions,
+                    'Height': accumulated[tree_name]['Height'] / repetitions,
+                    'Nodes': accumulated[tree_name]['Nodes'] // repetitions
                 })
                 
-    # Definiamo il percorso di salvataggio
     csv_path = os.path.join('risultati', 'risultati.csv')
     if not os.path.exists('risultati'):
         os.makedirs('risultati')
         
-    # Scriviamo tutti i risultati nel file CSV
     with open(csv_path, 'w', newline='') as csvfile:
-        fieldnames = ['Tree', 'Size', 'DupPct', 'InsertTime', 'SearchTime', 'Height', 'Nodes']
+        fieldnames = ['Tree', 'Size', 'DupPct', 'InsertTime', 'SearchSuccessTime', 'SearchFailureTime', 'Height', 'Nodes']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
         writer.writeheader()
         for row in results:
             writer.writerow(row)
